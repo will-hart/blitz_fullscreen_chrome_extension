@@ -55,5 +55,24 @@ document.addEventListener('DOMContentLoaded', function () {
             input_field.focus();
             input_field.select();
         });
+        
+        // list the tabs in the ul
+        chrome.tabs.query({'windowId': w.id}, function(tabs) {
+            var tablist = document.getElementById('tablist');
+            tabs.forEach(function(tab) {
+                var li = document.createElement('li');
+                var title = document.createElement('span');
+                title.appendChild(document.createTextNode(tab.title));
+                var urlspan = document.createElement('span');
+                urlspan.appendChild(document.createTextNode(tab.url));
+                
+                li.appendChild(title);
+                li.appendChild(urlspan);
+                tablist.appendChild(li);
+                /*tablist.append += "<li><span class='tab-title'>" + tab.title + "</span>" +
+                    "<span class='tab-url'>" + tab.url + "</span>";*/
+            });
+        });
     });
+    
 });
