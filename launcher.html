@@ -3,11 +3,43 @@
     <head>
         <title>URL Launcher</title>
         <style>
-            html, body { width: 420px; padding: 0; margin: 0; background: #303030;}
-            body { width: 100%; }
-            input[type="text"] { width: 75%; float:left; font-size: 1.2em; padding: 1%; margin: 2px;}
-            input[type="submit"] { width: 20%; height: 90%; float:right; padding: 1%; margin-right: 3px; margin-top: 6px;}
-            
+            html { 
+                background: #303030; 
+                margin: 0; 
+                padding: 0;
+            }
+            body { 
+                width: 450px; 
+                padding: 0; 
+                margin: 0; 
+            }
+            input[type="text"] { 
+                width: 400px;
+                height: 24px;
+                background: #DDD url(url.png) left no-repeat; 
+                padding: 3px 0 3px 65px;
+                border:none;
+                font-size: 1.1em;
+                max-height: 60px;
+                position: absolute;
+                top: 0;
+                left: 0;
+                margin:0;
+            }
+            input[type="submit"] {
+                width: 50px;
+                height: 30px;
+                position: absolute;
+                top: 0;
+                right: 0;
+                margin: 0;
+                border: none;
+                border-radius: 0px;
+                background: #0047FF;
+                color: white;
+                cursor: pointer;
+                font-weight: bold;
+            }
         </style>
         <script src="redirector.js"></script>
     </head>
