@@ -2,7 +2,7 @@
     "name": "Blitz Full Screen URL Launcher",
     "version": "1.1",
     "description": "A fullscreen URL launcher",
-    "homepage_url": "http://www.williamhart.info/blog/2013/01/blitz-full-screen-chrome-url-extension",
+    "homepage_url": "http://www.blitzlogger.com/blitz-chrome-url-extension.html",
     "permissions": [
         "tabs", "http://*/*", "https://*/*"
     ],

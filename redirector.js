@@ -2,11 +2,18 @@
  * Redirection function - on key press or submit button press
  *
  * Works just by setting document.location
+ * 
+ * Version: 1.1
+ * 
+ * New in version 1.1: 
+ *    + Shows current URL on open
+ *    + Automatically closes extension window after redirect
+ *    + Add 'http://' to start of URL if not present
  */
 
 function get_location() {
     var url = document.getElementById('launch_url').value;
-    if (url.substring(0,3) == "www") {
+    if (url.substring(0,4) != "http") {
         url = "http://" + url;
     }
     return url;
@@ -25,6 +32,7 @@ function click_go(e) {
     chrome.windows.getCurrent(function(w) {
         chrome.tabs.getSelected(w.id, function (tab) {
             chrome.tabs.update(tab.id, { "url": get_location() });
+            window.close();
         });
     });
 }
@@ -37,8 +45,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // hook up the key press
     document.body.onkeyup = handle_keypress;
     
-    // select the field
+    // find the input field
     var input_field = document.getElementById('launch_url');
-    input_field.focus();
-    input_field.select();
+    
+    // put the current url in there and select it
+    chrome.windows.getCurrent(function(w) {
+        chrome.tabs.getSelected(w.id, function (tab) {
+            input_field.value = tab.url;
+            input_field.focus();
+            input_field.select();
+        });
+    });
 });
