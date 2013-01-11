@@ -1,16 +1,23 @@
 /*
  * Redirection function - on key press or submit button press
  *
- * Works just by setting document.location
+ * Works by setting document.location
  * 
- * Version: 1.1
+ * Version: 1.2
  * 
+ * New in version 1.2:
+ *    - Removed "go" button, just hit enter to submit!
+ *    + Restyled
+ *    + Added tab browser so you never need to leave fullscreen!
+ *
  * New in version 1.1: 
  *    + Shows current URL on open
  *    + Automatically closes extension window after redirect
  *    + Add 'http://' to start of URL if not present
  */
 
+ 
+// does some very basic manipulation of the url in the input box
 function get_location() {
     var url = document.getElementById('launch_url').value;
     if (url.substring(0,4) != "http") {
@@ -19,28 +26,34 @@ function get_location() {
     return url;
 }
 
+// handles hitting 'enter' inside the input box
 function handle_keypress(e) {
     key = e.keyCode? e.keyCode : e.charCode;
     if(key==13) {
-        click_go();
+        chrome.windows.getCurrent(function(w) {
+            chrome.tabs.getSelected(w.id, function (tab) {
+                chrome.tabs.update(tab.id, { "url": get_location() });
+                window.close();
+            });
+        });
     } else {
         return true;
     }
 }
 
-function click_go(e) {
-    chrome.windows.getCurrent(function(w) {
-        chrome.tabs.getSelected(w.id, function (tab) {
-            chrome.tabs.update(tab.id, { "url": get_location() });
-            window.close();
-        });
-    });
+// handle clicking on the tab list and selecting the correct tab
+function redirect_to_tab(e, t) {
+    // get the tab id using the <li data-id> attribute
+    tabid = parseInt(this.dataset['id']);
+    
+    // select the requested tab
+    chrome.tabs.update(tabid, {"active": true});
+    
 }
 
+
+// sets up the list of tabs and the event handling
 document.addEventListener('DOMContentLoaded', function () {
-    // hook up the go button
-    var go_btn = document.getElementById('go');
-    go_btn.addEventListener('click', click_go);
     
     // hook up the key press
     document.body.onkeyup = handle_keypress;
@@ -62,16 +75,27 @@ document.addEventListener('DOMContentLoaded', function () {
             tabs.forEach(function(tab) {
                 var li = document.createElement('li');
                 var title = document.createElement('span');
-                title.appendChild(document.createTextNode(tab.title));
                 var urlspan = document.createElement('span');
-                urlspan.appendChild(document.createTextNode(tab.url));
                 
+                title.appendChild(document.createTextNode(tab.title));
+                title.setAttribute('class', 'tab-title');
+                
+                urlspan.appendChild(document.createTextNode(tab.url));
+                urlspan.setAttribute('class', 'tab-url');
+                
+                li.setAttribute('data-id', tab.id);
                 li.appendChild(title);
                 li.appendChild(urlspan);
+                li.addEventListener('click', redirect_to_tab);
+                
                 tablist.appendChild(li);
-                /*tablist.append += "<li><span class='tab-title'>" + tab.title + "</span>" +
-                    "<span class='tab-url'>" + tab.url + "</span>";*/
             });
+            
+            // resize the popup to fit the list
+            var html = document.getElementsByTagName("html")[0];
+            var height = document.getElementsByTagName("ul")[0].clientHeight + 
+                           document.getElementById("launch_url").clientHeight + 10;
+            html.style.height = height + "px";
         });
     });
     

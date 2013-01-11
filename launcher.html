@@ -1,21 +1,24 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
     <head>
         <title>URL Launcher</title>
         <style>
             html { 
-                background: #303030; 
+                background: #303030;
+                overflow: hidden;
                 margin: 0; 
                 padding: 0;
-                height: auto;
+                width: 466px;
             }
             body { 
-                width: 450px; 
+                width: 460px; 
                 padding: 0; 
                 margin: 0; 
+                overflow: hidden;
             }
             input[type="text"] { 
                 width: 400px;
+                overflow: hidden;
                 height: 24px;
                 background: #DDD url(url.png) left no-repeat; 
                 padding: 3px 0 3px 65px;
@@ -30,20 +33,6 @@
             input:focus { 
                 outline: none;
             }
-            input[type="submit"] {
-                width: 50px;
-                height: 30px;
-                position: absolute;
-                top: 0;
-                right: 0;
-                margin: 0;
-                border: none;
-                border-radius: 0px;
-                background: #0047FF;
-                color: white;
-                cursor: pointer;
-                font-weight: bold;
-            }
             ul {
                 list-style-type: none; 
                 position: absolute; 
@@ -52,19 +41,20 @@
                 padding: 0;
                 margin: 0;
                 width: 100%;
-                overflow: none;
+                min-height: 100px;
+                overflow-x: hidden;
             }
             li {
                 display:block;
-                padding: 10px;
+                padding: 5px;
                 cursor: pointer;
-                overflow: none;
+                white-space: nowrap;
             }
             li:hover { 
                 background: #404040;
             }
             .tab-title { 
-                font-size: 1.3em;
+                font-size: 1.1em;
                 display: block;
                 font-weight: bolder;
                 color: #7BB842;
@@ -74,17 +64,13 @@
                 left: 30px;
                 text-shadow: 1px 1px 0px black;
                 color: #BBB;
-                font-style: italic;
+                font-size: 0.8m;
             }
         </style>
         <script src="redirector.js"></script>
     </head>
     <body>
         <input type="text" id="launch_url" placeholder="http://" accesskey="s">
-        <input type="submit" value="Go" name="go" id="go">
-        
-        <ul id="tablist">
-            
-        </ul>
+        <ul id="tablist"></ul>
     </body>
 </html>
