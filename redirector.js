@@ -8,6 +8,7 @@
  * New in version 1.2.2:
  *    + restyled
  *    + typing '?' first and then some search terms now searches google
+ *    + highlight the current tab
  *
  * New in version 1.2.1:
  *    + Search google by typing `g?` and then a search query
@@ -76,7 +77,11 @@ document.addEventListener('DOMContentLoaded', function () {
     
     // put the current url in there and select it
     chrome.windows.getCurrent(function(w) {
+    
+        var currTab;
+        
         chrome.tabs.getSelected(w.id, function (tab) {
+            currTab = tab.id;
             input_field.value = tab.url;
             input_field.focus();
             input_field.select();
@@ -85,6 +90,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // list the tabs in the ul
         chrome.tabs.query({'windowId': w.id}, function(tabs) {
             var tablist = document.getElementById('tablist');
+            console.log(currTab);            
+            
             tabs.forEach(function(tab) {
                 var li = document.createElement('li');
                 var title = document.createElement('span');
@@ -100,6 +107,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 li.appendChild(title);
                 li.appendChild(urlspan);
                 li.addEventListener('click', redirect_to_tab);
+                
+                // if this is the current tab, append "active" (since v1.2.2) 
+                if (tab.id == currTab) {
+                    li.setAttribute('class', 'active');
+                }
                 
                 tablist.appendChild(li);
             });
