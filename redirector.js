@@ -5,9 +5,19 @@
  * 
  * Version: 1.2
  * 
+ * New in version 1.2.3:
+ *    + shift + enter in url text box to create a new tab
+ *    + ctrl + click a tab in the list to close it
+ * 
+ * New in version 1.2.2:
+ *    + restyled
+ *    + typing '?' first and then some search terms now searches google
+ *    + highlight the current tab
+ *
  * New in version 1.2.1:
  *    + Search google by typing `g?` and then a search query
  *    + Search duck duck go by typing `d?` and then a search query
+ *
  * New in version 1.2:
  *    - Removed "go" button, just hit enter to submit!
  *    + Restyled
@@ -19,12 +29,16 @@
  *    + Add 'http://' to start of URL if not present
  */
 
+
+// the current tab
+var currTab;
  
 // does some very basic manipulation of the url in the input box
 function get_location() {
     var url = document.getElementById('launch_url').value;
-    if (url.substring(0,2) == 'g?') {
-        url = "http://www.google.com/search?q=" + url.replace('g?','').replace(' ', '+');
+    if (url.substring(0,2) == 'g?' || url.substring(0,1) == '?') {
+        url = url.substring(url.substring(0,2) == 'g?' ? 2 : 1);
+        url = "http://www.google.com/search?q=" + url.replace(' ', '+');
     } else if (url.substring(0,2) == 'd?') {
         url = "http://www.duckduckgo.com/?q=" + url.replace('d?','').replace(' ', '+');
     } else if (url.substring(0,4) != "http") {
@@ -36,12 +50,17 @@ function get_location() {
 // handles hitting 'enter' inside the input box
 function handle_keypress(e) {
     key = e.keyCode? e.keyCode : e.charCode;
-    if(key==13) {
+    if(key==13 && !e.shiftKey) {
         chrome.windows.getCurrent(function(w) {
             chrome.tabs.getSelected(w.id, function (tab) {
                 chrome.tabs.update(tab.id, { "url": get_location() });
                 window.close();
             });
+        });
+    } else if (key==13) {
+        // create a new tab - since 1.2.3
+        chrome.tabs.create({
+            "url": get_location()
         });
     } else {
         return true;
@@ -53,11 +72,59 @@ function redirect_to_tab(e, t) {
     // get the tab id using the <li data-id> attribute
     tabid = parseInt(this.dataset['id']);
     
-    // select the requested tab
-    chrome.tabs.update(tabid, {"active": true});
-    
+    // check if ctrl key is held - this closes the clicked tab (since 1.2.3)
+    if (e.ctrlKey) {
+        chrome.tabs.remove(tabid);
+        if (this.parentNode) {
+            this.parentNode.removeChild(this);
+        }
+    } else {
+        // select the requested tab
+        chrome.tabs.update(tabid, {"active": true});
+    }
 }
 
+// lists the tabs in the ul
+function do_list_tabs(w) {
+
+    // list the tabs in the ul
+    chrome.tabs.query({'windowId': w.id}, function(tabs) {
+        var tablist = document.getElementById('tablist');
+        
+        // remove old elements
+        tablist.innerHTML = "";
+        
+        tabs.forEach(function(tab) {
+            var li = document.createElement('li');
+            var title = document.createElement('span');
+            var urlspan = document.createElement('span');
+            
+            title.appendChild(document.createTextNode(tab.title));
+            title.setAttribute('class', 'tab-title');
+            
+            urlspan.appendChild(document.createTextNode(tab.url));
+            urlspan.setAttribute('class', 'tab-url');
+            
+            li.setAttribute('data-id', tab.id);
+            li.appendChild(title);
+            li.appendChild(urlspan);
+            li.addEventListener('click', redirect_to_tab);
+            
+            // if this is the current tab, append "active" (since v1.2.2) 
+            if (tab.id == currTab) {
+                li.setAttribute('class', 'active');
+            }
+            
+            tablist.appendChild(li);
+        });
+        
+        // resize the popup to fit the list
+        var html = document.getElementsByTagName("html")[0];
+        var height = document.getElementsByTagName("ul")[0].clientHeight + 
+                       document.getElementById("launch_url").clientHeight + 10;
+        html.style.height = height + "px";
+    });
+}
 
 // sets up the list of tabs and the event handling
 document.addEventListener('DOMContentLoaded', function () {
@@ -67,43 +134,16 @@ document.addEventListener('DOMContentLoaded', function () {
     
     // find the input field
     var input_field = document.getElementById('launch_url');
-    
+
     // put the current url in there and select it
     chrome.windows.getCurrent(function(w) {
         chrome.tabs.getSelected(w.id, function (tab) {
+            currTab = tab.id;
             input_field.value = tab.url;
             input_field.focus();
             input_field.select();
         });
         
-        // list the tabs in the ul
-        chrome.tabs.query({'windowId': w.id}, function(tabs) {
-            var tablist = document.getElementById('tablist');
-            tabs.forEach(function(tab) {
-                var li = document.createElement('li');
-                var title = document.createElement('span');
-                var urlspan = document.createElement('span');
-                
-                title.appendChild(document.createTextNode(tab.title));
-                title.setAttribute('class', 'tab-title');
-                
-                urlspan.appendChild(document.createTextNode(tab.url));
-                urlspan.setAttribute('class', 'tab-url');
-                
-                li.setAttribute('data-id', tab.id);
-                li.appendChild(title);
-                li.appendChild(urlspan);
-                li.addEventListener('click', redirect_to_tab);
-                
-                tablist.appendChild(li);
-            });
-            
-            // resize the popup to fit the list
-            var html = document.getElementsByTagName("html")[0];
-            var height = document.getElementsByTagName("ul")[0].clientHeight + 
-                           document.getElementById("launch_url").clientHeight + 10;
-            html.style.height = height + "px";
-        });
+        do_list_tabs(w);
     });
-    
 });
