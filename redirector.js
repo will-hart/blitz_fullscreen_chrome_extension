@@ -5,9 +5,14 @@
  * 
  * Version: 1.2
  * 
+ * New in version 1.2.2:
+ *    + restyled
+ *    + typing '?' first and then some search terms now searches google
+ *
  * New in version 1.2.1:
  *    + Search google by typing `g?` and then a search query
  *    + Search duck duck go by typing `d?` and then a search query
+ *
  * New in version 1.2:
  *    - Removed "go" button, just hit enter to submit!
  *    + Restyled
@@ -23,8 +28,9 @@
 // does some very basic manipulation of the url in the input box
 function get_location() {
     var url = document.getElementById('launch_url').value;
-    if (url.substring(0,2) == 'g?') {
-        url = "http://www.google.com/search?q=" + url.replace('g?','').replace(' ', '+');
+    if (url.substring(0,2) == 'g?' || url.substring(0,1) == '?') {
+        url = url.substring(url.substring(0,2) == 'g?' ? 2 : 1);
+        url = "http://www.google.com/search?q=" + url.replace(' ', '+');
     } else if (url.substring(0,2) == 'd?') {
         url = "http://www.duckduckgo.com/?q=" + url.replace('d?','').replace(' ', '+');
     } else if (url.substring(0,4) != "http") {
