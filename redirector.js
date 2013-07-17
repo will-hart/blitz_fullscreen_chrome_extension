@@ -3,7 +3,11 @@
  *
  * Works by setting document.location
  * 
- * Version: 1.2
+ * Version: 1.2.4
+ *
+ * New in version 1.2.4:
+ *    + Update url box to act like Omnibox.  just type a search term to se
+ *      search or a URL to go to the URL
  * 
  * New in version 1.2.3:
  *    + shift + enter in url text box to create a new tab
@@ -34,16 +38,29 @@
 var currTab;
  
 // does some very basic manipulation of the url in the input box
+// from version 1.2.4 keeps backwards compatibility but replicates omnibox search functionality
 function get_location() {
     var url = document.getElementById('launch_url').value;
-    if (url.substring(0,2) == 'g?' || url.substring(0,1) == '?') {
-        url = url.substring(url.substring(0,2) == 'g?' ? 2 : 1);
-        url = "http://www.google.com/search?q=" + url.replace(' ', '+');
-    } else if (url.substring(0,2) == 'd?') {
-        url = "http://www.duckduckgo.com/?q=" + url.replace('d?','').replace(' ', '+');
-    } else if (url.substring(0,4) != "http") {
-        url = "http://" + url;
+    if(new RegExp("([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?(/.*)?").test(url)) {
+        if (url.substring(0,4) != "http") {
+            url = "http://" + url;
+        }
     }
+    else if (url.substring(0,2) == 'd?') {
+        url = "http://www.duckduckgo.com/?q=" + url.replace('d?','').replace(' ', '+');
+    }
+    else
+    {
+        if (url.substring(0,1) == "?") 
+        {
+            url = url.substring(1);
+        } 
+        else if (url.substring(1,1) == "?")
+        {
+            url = url.substring(2);
+        }
+        url = "http://www.google.com/search?q=" + url.replace(' ', '+');
+    } 
     return url;
 }
 
