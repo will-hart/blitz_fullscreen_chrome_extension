@@ -5,22 +5,21 @@
         <style>
             html { 
                 background: rgb(248, 248, 248);
-                overflow: hidden;
-                margin: 0; 
+                margin: 0;
                 padding: 0;
                 width: 466px;
+                overflow-y: auto;
             }
             body { 
-                width: 460px; 
+                width: 460px;
                 padding: 0; 
-                margin: 0; 
-                overflow: hidden;
+                margin: 0;
             }
             input[type="text"] { 
                 width: 400px;
                 overflow: hidden;
                 height: 24px;
-                background: #DDD url(url.png) left no-repeat; 
+                background: #DDD url(url.png) left no-repeat;
                 padding: 3px 0 3px 65px;
                 border:none;
                 font-size: 0.9em;
@@ -45,43 +44,50 @@
                 overflow-x: hidden;
             }
             li {
+                background: #e1e1e1;
+                margin-bottom: 3px;
+                border: 1px solid #d8d8d8;
                 display:block;
-                padding: 5px;
+                padding: 3px;
                 cursor: pointer;
                 white-space: nowrap;
             }
-            .tab-title { 
-                font-size: 1.1em;
+            .tab-fav{
+                max-width: 20px;
+                height: auto;
+                margin-right: 8px;
+                float: left;
+            }
+            .tab-title {
+                font-size: 0.9em;
                 display: block;
-                font-weight: bolder;
-                color: rgb(102, 184, 26);
+                /* font-weight: bolder; */
+                /* color: rgb(102, 184, 26); */
+                color: rgb(31, 31, 31);
+                text-overflow: ellipsis;
             }
             .tab-url {
                 position: relative;
                 left: 20px;
                 color: #777;
-                font-size: 0.8m;
+                font-size: 0.7em;
             }
             
             
-            li:hover { 
-                background: #666;
-            }
-            li:hover > .tab-title { 
-                color: rgb(131, 231, 38);
-            }
-            li:hover > .tab-url {
-                color: #DDD;
+            li:hover {
+                background: #c8c8c8;
             }
             
             .active {
-                background: #DDD;
+                background: #c8c8c8;
             }
         </style>
         <script src="redirector.js"></script>
     </head>
     <body>
         <input type="text" id="launch_url" placeholder="http://" accesskey="s">
-        <ul id="tablist"></ul>
+        <ul id="tablist">
+
+        </ul>
     </body>
 </html>

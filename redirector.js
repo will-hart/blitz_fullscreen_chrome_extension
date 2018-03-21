@@ -86,7 +86,6 @@ function redirect_to_tab(e, t) {
 
 // lists the tabs in the ul
 function do_list_tabs(w) {
-
     // list the tabs in the ul
     chrome.tabs.query({'windowId': w.id}, function(tabs) {
         var tablist = document.getElementById('tablist');
@@ -96,9 +95,13 @@ function do_list_tabs(w) {
         
         tabs.forEach(function(tab) {
             var li = document.createElement('li');
+            var fav=document.createElement('img');
             var title = document.createElement('span');
             var urlspan = document.createElement('span');
-            
+
+            fav.setAttribute('src',tab.favIconUrl);
+            fav.setAttribute('class','tab-fav');
+
             title.appendChild(document.createTextNode(tab.title));
             title.setAttribute('class', 'tab-title');
             
@@ -106,6 +109,7 @@ function do_list_tabs(w) {
             urlspan.setAttribute('class', 'tab-url');
             
             li.setAttribute('data-id', tab.id);
+            li.appendChild(fav);
             li.appendChild(title);
             li.appendChild(urlspan);
             li.addEventListener('click', redirect_to_tab);
@@ -122,7 +126,8 @@ function do_list_tabs(w) {
         var html = document.getElementsByTagName("html")[0];
         var height = document.getElementsByTagName("ul")[0].clientHeight + 
                        document.getElementById("launch_url").clientHeight + 10;
-        html.style.height = height + "px";
+        html.style.height = Math.min(height,screen.height) + "px";
+        // html.style.height = screen.height+ "px";
     });
 }
 
